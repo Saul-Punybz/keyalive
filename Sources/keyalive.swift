@@ -1,3 +1,6 @@
+// Required Notice: Copyright (c) 2026 Saul Gonzalez (https://github.com/Saul-Punybz/keyalive)
+// Licensed under the PolyForm Noncommercial License 1.0.0 — see LICENSE.md. Commercial use requires a paid license.
+//
 // KeyAlive — keeps Bluetooth LE keyboards from falling asleep on macOS.
 //
 // Many cheap BLE keyboards power down their radio after a few idle minutes and

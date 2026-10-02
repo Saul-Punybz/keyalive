@@ -87,8 +87,16 @@ A healthy log looks like this:
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+KeyAlive is **free for noncommercial use** under the [PolyForm Noncommercial License 1.0.0](LICENSE.md). Personal use, study, hobby projects, schools, charities and government institutions are all covered.
+
+**Commercial use needs a paid license.** That includes using it inside a company, bundling it with a product, or selling it. To get one, contact Saul Gonzalez through GitHub ([@Saul-Punybz](https://github.com/Saul-Punybz)).
+
+Credit is required in every case. Anyone who passes on a copy must include the license and this line:
+
+```
+Required Notice: Copyright (c) 2026 Saul Gonzalez (https://github.com/Saul-Punybz/keyalive)
+```
 
 ---
 
-*Leer en español:* KeyAlive mantiene despiertos los teclados Bluetooth en macOS. Cada 60 s les lee la batería para que no se duerman, y si se caen, los reconecta solo apenas despiertan. Para instalarlo: `git clone`, `cd keyalive`, `make install`. Cuando macOS pida acceso a Bluetooth, dale "Permitir".
+*Leer en español:* KeyAlive es gratis para uso personal y sin fines de lucro, y siempre hay que darle crédito a Saul Gonzalez. Las empresas necesitan una licencia comercial pagada. KeyAlive mantiene despiertos los teclados Bluetooth en macOS. Cada 60 s les lee la batería para que no se duerman, y si se caen, los reconecta solo apenas despiertan. Para instalarlo: `git clone`, `cd keyalive`, `make install`. Cuando macOS pida acceso a Bluetooth, dale "Permitir".
