@@ -163,6 +163,11 @@ final class Agent: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
         switch c.state {
         case .poweredOn:
             log("Bluetooth on — looking for BLE keyboards (ping every \(Int(opts.interval)) s)")
+            // Turning Bluetooth off (e.g. Mac sleep) cancels every connection: re-arm the ones we track.
+            for p in tracked.values where p.state != .connected {
+                pingChar[p.identifier] = nil
+                cm.connect(p, options: nil)
+            }
             // Re-arm pending connections for keyboards seen before (maybe asleep right now).
             // A sleeping keyboard is absent from the HID list, so only the --name filter applies here.
             for p in c.retrievePeripherals(withIdentifiers: Array(known.keys)) {
@@ -217,8 +222,13 @@ final class Agent: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
     }
 
     func centralManager(_ c: CBCentralManager, didFailToConnect p: CBPeripheral, error: Error?) {
-        log("connect failed for \(label(p)): \(error?.localizedDescription ?? "-") — retrying")
-        c.connect(p, options: nil)
+        // While Bluetooth is off, connect fails instantly; the poweredOn handler re-arms it instead.
+        guard c.state == .poweredOn else { return }
+        log("connect failed for \(label(p)): \(error?.localizedDescription ?? "-") — retrying in 5 s")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
+            guard let self, self.cm.state == .poweredOn, p.state == .disconnected else { return }
+            self.cm.connect(p, options: nil)
+        }
     }
 
     func peripheral(_ p: CBPeripheral, didDiscoverServices error: Error?) {
