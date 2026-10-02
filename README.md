@@ -63,6 +63,7 @@ A healthy log looks like this:
 | `--interval SECONDS` | `60` | Time between pings (minimum 5). Use a value shorter than your keyboard's sleep timeout. |
 | `--name TEXT` | all keyboards | Only handle devices whose name contains `TEXT`. Repeatable. |
 | `--include-mice` | off | Also keep BLE mice and trackpads awake. |
+| `--verbose` | off | Log every ping, to check whether a keyboard drops right after one. |
 
 ## Troubleshooting
 
@@ -74,6 +75,8 @@ A healthy log looks like this:
 **It still sleeps.** Some keyboard firmware only counts keystrokes as activity and ignores radio traffic. KeyAlive will still reconnect it the moment you press a key, but it can't keep that model awake. Please open an issue with the keyboard model so others know.
 
 **The log shows `Bluetooth is off — waiting` every few minutes.** That's the Mac going to sleep, not the keyboard: macOS turns Bluetooth off during sleep. Check with `pmset -g log | grep "Entering Sleep"`. On battery, macOS defaults can put the Mac to sleep after only a couple of idle minutes. KeyAlive's pings don't count as user activity, so they won't keep the Mac awake, and they shouldn't. When the Mac wakes, KeyAlive reconnects the keyboard on its own.
+
+**macOS asks for Bluetooth access again after every update.** KeyAlive is signed ad hoc, not with an Apple Developer ID, so macOS ties the permission to that exact build. Each `make install` creates a new build, so click **Allow** again. Until you do, the log stops at `keyalive … starting`.
 
 **Classic (non-LE) Bluetooth keyboards.** These aren't supported yet. Apple's Bluetooth LE framework, which KeyAlive uses, can't talk to them.
 

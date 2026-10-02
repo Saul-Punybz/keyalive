@@ -21,6 +21,7 @@ struct Options {
     var interval: TimeInterval = 60
     var names: [String] = []      // explicit name filters (substring, case-insensitive)
     var includeMice = false
+    var verbose = false
     var command = "run"           // run | list
     var listSeconds: TimeInterval = 15
 }
@@ -43,6 +44,7 @@ func usage() -> Never {
       --name TEXT     Only handle devices whose name contains TEXT (repeatable).
                       Without it, every BLE keyboard macOS reports is handled.
       --include-mice  Also keep BLE mice and trackpads awake.
+      --verbose       Log every ping (to see whether a keyboard drops right after one).
     """)
     exit(0)
 }
@@ -64,6 +66,7 @@ func parse() -> Options {
             o.interval = v
         case "--name", "-n": o.names.append(value().lowercased())
         case "--include-mice": o.includeMice = true
+        case "--verbose": o.verbose = true
         case "--version", "-v": print(version); exit(0)
         case "--help", "-h": usage()
         default:
@@ -249,12 +252,17 @@ final class Agent: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
     func pingAll() { tracked.values.forEach(ping) }
 
     func ping(_ p: CBPeripheral) {
-        guard p.state == .connected, let ch = pingChar[p.identifier] else { return }
+        guard p.state == .connected, let ch = pingChar[p.identifier] else {
+            if opts.verbose { log("ping skipped \(label(p)) (state \(p.state.rawValue), char \(pingChar[p.identifier] != nil))") }
+            return
+        }
+        if opts.verbose { log("ping → \(label(p))") }
         p.readValue(for: ch)
     }
 
     func peripheral(_ p: CBPeripheral, didUpdateValueFor ch: CBCharacteristic, error: Error?) {
         if let e = error { log("ping failed for \(label(p)): \(e.localizedDescription)"); return }
+        if opts.verbose { log("ping ok \(label(p)) [\(ch.uuid.uuidString)]") }
         guard ch.uuid == batteryLevel, let v = ch.value?.first.map(Int.init) else { return }
         if lastBattery[p.identifier] != v {
             log("battery \(label(p)): \(v)%")
